@@ -6,7 +6,7 @@ const Login = () => {
     <div className="register">
       <div className="card">
         <div className="card-header">
-          <h3>Login</h3>
+          <h3>Login1</h3>
           <div className="card-body">
             <form>
               <div className="form-group">
