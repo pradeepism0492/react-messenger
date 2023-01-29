@@ -35,7 +35,6 @@ const Register = () => {
         ...state,
         [e.target.name]: e.target.files[0],
       });
-      console.log("daf");
     }
     const reader = new FileReader();
     reader.onload = () => {
@@ -69,7 +68,7 @@ const Register = () => {
       error.map((err) => alert.success(err));
       dispatch({ type: ERROR_CLEAR });
     }
-  }, [alert, successMessage, error, authenticate, navigate]);
+  }, [alert, successMessage, error, authenticate, navigate, dispatch]);
 
   return (
     <div className="register">

@@ -76,7 +76,7 @@ module.exports.userRegister = (req, res) => {
 
               const token = jwt.sign(
                 {
-                  id: userCreate._id.toString(),
+                  id: userCreate._id,
                   email: userCreate.email,
                   userName: userCreate.userName,
                   image: userCreate.image,
@@ -115,4 +115,82 @@ module.exports.userRegister = (req, res) => {
   }); // end Formidable
 };
 
-module.exports.userLogin = async (req, res) => {};
+module.exports.userLogin = async (req, res) => {
+  const error = [];
+  const { email, password } = req.body;
+  console.log("req.body===>", req.body);
+  if (!email) {
+    error.push("Please provide your Email");
+  }
+  if (!password) {
+    error.push("Please provide your Password");
+  }
+  if (email && !validator.isEmail(email)) {
+    error.push("Please provide your valid email");
+  }
+  if (error.length > 0) {
+    res.status(404).json({
+      error: {
+        errorMessage: error,
+      },
+    });
+  } else {
+    // check email is present in bd or not
+    try {
+      const checkUser = await registerModel
+        .findOne({
+          email: email,
+        })
+        .select("+password");
+      if (checkUser) {
+        const matchPassword = await bcrypt.compare(
+          password,
+          checkUser.password
+        );
+        if (matchPassword) {
+          const token = jwt.sign(
+            {
+              id: checkUser._id,
+              email: checkUser.email,
+              userName: checkUser.userName,
+              image: checkUser.image,
+              registerTime: checkUser.createdAt,
+            },
+            "pradeepgupta0492",
+            {
+              expiresIn: "7d",
+            }
+          );
+          const options = {
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          };
+          console.log("options==>", options);
+          res.status(200).cookie("authToken", token, options).json({
+            successMessage: "Your Login Successful",
+            token,
+          });
+        } else {
+          res.status(400).json({
+            error: {
+              errorMessage: ["Your Password not Vaild"],
+            },
+          });
+        }
+      } else {
+        res.status(400).json({
+          error: {
+            errorMessage: ["Your Email not Found"],
+          },
+        });
+      }
+    } catch (error) {
+      res.status(404).json({
+        error: {
+          errorMessage: ["Internal Server Error"],
+        },
+      });
+      console.log(error);
+    }
+  }
+  res.send(req.body);
+};

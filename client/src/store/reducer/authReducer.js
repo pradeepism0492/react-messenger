@@ -3,6 +3,8 @@ import {
   REGISTER_FAIL,
   REGISTER_SUCCESS,
   SUCCESS_MESSAGE_CLEAR,
+  USER_LOGIN_FAIL,
+  USER_LOGIN_SUCCESS,
 } from "../types/authType";
 import deCodeToken from "jwt-decode";
 
@@ -35,6 +37,7 @@ export const authReducer = (state = authState, action) => {
   const { payload, type } = action;
   switch (type) {
     case REGISTER_FAIL:
+    case USER_LOGIN_FAIL:
       return {
         ...state,
         error: payload.error,
@@ -43,6 +46,7 @@ export const authReducer = (state = authState, action) => {
         loading: true,
       };
     case REGISTER_SUCCESS:
+    case USER_LOGIN_SUCCESS:
       const myInfo = tokenDecode(payload.token);
       return {
         ...state,
