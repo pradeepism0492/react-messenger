@@ -1,9 +1,10 @@
 import axios from "axios";
+
 export const userRegister = (data) => {
   return async (dispatch) => {
     const config = {
       headers: {
-        "content-Type": "application/json",
+        "Content-Type": "application/josn",
       },
     };
     try {
@@ -12,9 +13,9 @@ export const userRegister = (data) => {
         data,
         config
       );
-      console.log("response===>", response);
+      console.log(response.data);
     } catch (error) {
-      console.log("error===>", error.response.data);
+      console.log(error.response.data);
     }
   };
 };
