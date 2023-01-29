@@ -3,6 +3,7 @@ const validator = require("validator");
 const registerModel = require("../models/authModel");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports.userRegister = (req, res) => {
   const form = formidable();
@@ -71,9 +72,36 @@ module.exports.userRegister = (req, res) => {
                 password: await bcrypt.hash(password, 10),
                 image: files.image.originalFilename,
               });
-              console.log("registration Complete successfully");
+              console.log("registration Complete successfully", userCreate);
+
+              const token = jwt.sign(
+                {
+                  id: userCreate._id.toString(),
+                  email: userCreate.email,
+                  userName: userCreate.userName,
+                  image: userCreate.image,
+                  registerTime: userCreate.createdAt,
+                },
+                "pradeepgupta0492",
+                {
+                  expiresIn: "7d",
+                }
+              );
+              const options = {
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              };
+              res.status(201).cookie("authToken", token, options).json({
+                successMessage: "Your Register Successful",
+                token,
+              });
+            } else {
+              console.log("error", error);
+              res.status(500).json({
+                error: {
+                  errorMessage: ["Internal Server error"],
+                },
+              });
             }
-            console.log("error", error);
           });
         }
       } catch (error) {

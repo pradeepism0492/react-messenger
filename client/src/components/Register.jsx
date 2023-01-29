@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userRegister } from "../store/actions/AuthAction";
+import { useAlert } from "react-alert";
+
 const Register = () => {
+  const alert = useAlert();
+  const { loading, authenticate, error, successMessage, myInfo } = useSelector(
+    (state) => state.auth
+  );
+  console.log("myInfo===>", myInfo);
+
   const dispatch = useDispatch();
   const [loadImage, setLoadImage] = useState("");
   const [state, setState] = useState({

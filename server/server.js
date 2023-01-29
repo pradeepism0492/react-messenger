@@ -6,7 +6,7 @@ const databaseConnect = require("./config/database");
 const authRouter = require("./routes/authRoute");
 
 dotenv.config({
-  path: "backend/config/config.env",
+  path: "server/config/config.env",
 });
 
 app.use("/api/messenger", authRouter);
