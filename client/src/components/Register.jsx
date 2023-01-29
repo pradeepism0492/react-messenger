@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userRegister } from "../store/actions/AuthAction";
 import { useAlert } from "react-alert";
+import { ERROR_CLEAR, SUCCESS_MESSAGE_CLEAR } from "../store/types/authType";
 
 const Register = () => {
+  const navigate = useNavigate();
   const alert = useAlert();
+
   const { loading, authenticate, error, successMessage, myInfo } = useSelector(
     (state) => state.auth
   );
@@ -41,8 +44,8 @@ const Register = () => {
     reader.readAsDataURL(e.target.files[0]);
   };
   const register = (e) => {
-    const { userName, email, password, confirmPassword, image } = state;
     e.preventDefault();
+    const { userName, email, password, confirmPassword, image } = state;
     const formData = new FormData();
     formData.append("userName", userName);
     formData.append("email", email);
@@ -51,6 +54,23 @@ const Register = () => {
     formData.append("image", image);
     dispatch(userRegister(formData));
   };
+
+  useEffect(() => {
+    if (authenticate) {
+      navigate("/");
+    }
+    if (successMessage) {
+      alert.success(successMessage);
+      dispatch({
+        type: SUCCESS_MESSAGE_CLEAR,
+      });
+    }
+    if (error) {
+      error.map((err) => alert.success(err));
+      dispatch({ type: ERROR_CLEAR });
+    }
+  }, [alert, successMessage, error, authenticate, navigate]);
+
   return (
     <div className="register">
       <div className="card">

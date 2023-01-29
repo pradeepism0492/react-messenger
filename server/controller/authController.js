@@ -114,3 +114,5 @@ module.exports.userRegister = (req, res) => {
     }
   }); // end Formidable
 };
+
+module.exports.userLogin = async (req, res) => {};
