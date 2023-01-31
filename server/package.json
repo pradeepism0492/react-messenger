@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "server": "nodemon server.js --ignore client"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,5 @@
     "nodemon": "^2.0.20",
     "validator": "^13.7.0"
   },
-  "homepage": "."
-
+  "homepage": ""
 }
