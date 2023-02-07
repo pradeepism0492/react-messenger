@@ -5,17 +5,40 @@ import ActiveFriend from "./ActiveFriend";
 import Friends from "./Friends";
 import RightSide from "./RightSide";
 import { useEffect } from "react";
-import { getFriends } from "../store/actions/messangerAction";
+import { getFriends, messageSend } from "../store/actions/messangerAction";
+import { useState } from "react";
 
 const Messenger = () => {
+  const [currentFriend, setCurrentFriend] = useState("");
+  const [newMessage, setNewMessage] = useState("");
+
+  const inputMessageHandle = (e) => {
+    setNewMessage(e.target.value);
+  };
+
+  // sendMessage evemt
+  const sendMessage = (e) => {
+    e.preventDefault();
+    const data = {
+      senderName: myInfo.userName,
+      reseverId: currentFriend._id,
+      message: newMessage ? newMessage : "❤",
+    };
+    dispatch(messageSend(data));
+  };
+
   const { friends } = useSelector((state) => state.messenger);
   const { myInfo } = useSelector((state) => state.auth);
-  console.log("myInfo", myInfo);
-  console.log("friends", friends);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getFriends());
   }, [dispatch]);
+  useEffect(() => {
+    if (friends?.length) {
+      setCurrentFriend(friends[0]);
+    }
+  }, [friends]);
   return (
     <div className="messenger">
       <div className="row">
@@ -55,9 +78,16 @@ const Messenger = () => {
               <ActiveFriend />
             </div>
             <div className="friends">
-              {friends?.length > 0
+              {friends && friends.length > 0
                 ? friends.map((fd) => (
-                    <div className="hover-friend" key={fd._id}>
+                    <div
+                      onClick={() => setCurrentFriend(fd)}
+                      className={
+                        currentFriend?._id === fd._id
+                          ? "hover-friend active"
+                          : "hover-friend"
+                      }
+                    >
                       <Friends friend={fd} />
                     </div>
                   ))
@@ -65,7 +95,16 @@ const Messenger = () => {
             </div>
           </div>
         </div>
-        <RightSide />
+        {currentFriend ? (
+          <RightSide
+            currentFriend={currentFriend}
+            inputMessageHandle={inputMessageHandle}
+            newMessage={newMessage}
+            sendMessage={sendMessage}
+          />
+        ) : (
+          "Please select your friend"
+        )}
       </div>
     </div>
   );
